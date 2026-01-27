@@ -1,64 +1,77 @@
 networks:
   default:
-    driver: bride 
+    driver: bridge
     name: roboshop
-    external: true  # I created a network already using docker network create roboshop
-
+    #external: true #I created network already using docker network create roboshop
+volumes:
+  mongodb:
+  redis:
+  mysql:
+  rabbitmq: # docker volume create rabbitmq
 services:
   mongodb:
-    image: pardhupersonal72/mongodb:v1
-    conatiner_name: mongodb
+    image: joindevops/mongodb:v1
+    container_name: mongodb
+    volumes:
+    - mongodb:/data/db
   catalogue:
-    image: pardhupersonal72/catalogue:v1
+    image: joindevops/catalogue:v1
     container_name: catalogue
     depends_on:
     - mongodb
-
   redis:
     image: redis:7.0
     container_name: redis
-  
+    volumes:
+    - redis:/data
   user:
-    image: pardhupersonal/cart:v1
+    image: joindevops/user:v1
+    container_name: user
+    depends_on:
+    - redis
+    - mongodb
+  cart:
+    image: joindevops/cart:v1
     container_name: cart
-    depends_on: 
+    depends_on:
     - catalogue
     - redis
-
   mysql:
-    image: pardhuperonal72/mysql:v1
-    conatiner_name: mysql
+    image: joindevops/mysql:v1
+    container_name: mysql
+    volumes:
+    - mysql:/var/lib/mysql
   shipping:
-    image: pardhupersonal72/shipping:v1
+    image: joindevops/shipping:v1
     container_name: shipping
-    depends_on: 
+    depends_on:
     - mysql
     - cart
-
   rabbitmq:
     image: rabbitmq:3
     container_name: rabbitmq
-    environment: 
+    environment:
       RABBITMQ_DEFAULT_USER: roboshop
-      RABBITMQ_DEAFULT_PASS: roboshop123
-
+      RABBITMQ_DEFAULT_PASS: roboshop123
+    volumes:
+    - rabbitmq:/var/lib/rabbitmq
   payment:
-    image: pardhupersonal72/payment:v1
+    image: joindevops/payment:v1
     container_name: payment
     environment:
       CART_HOST: cart
-      CART_PORT1: 8080
+      CART_PORT: 8080
       USER_HOST: user
       USER_PORT: 8080
       AMQP_HOST: rabbitmq
-      AQMP_USER: roboshop
-      AMQP_PASS: roboshop123S
-    depends_on: 
+      AMQP_USER: roboshop
+      AMQP_PASS: roboshop123
+    depends_on:
     - rabbitmq
     - cart
     - user
   frontend:
-    image: pardhupersonal72S/frontend:v1
+    image: joindevops/frontend:v1
     container_name: frontend
     ports:
     - "80:80"
@@ -68,3 +81,4 @@ services:
     - cart
     - shipping
     - payment
+      
