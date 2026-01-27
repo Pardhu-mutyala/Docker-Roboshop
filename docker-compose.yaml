@@ -1,3 +1,36 @@
+networks:
+  default:
+    driver: bride 
+    name: roboshop
+    external: true  # I created a network already using docker network create roboshop
+
 services:
   mongodb:
-    image
+    image: pardhupersonal72/mongodb:v1
+    conatiner_name: mongodb
+  catalogue:
+    image: pardhupersonal72/catalogue:v1
+    container_name: catalogue
+    depends_on:
+    - mongodb
+
+  redis:
+    image: redis:7.0
+    container_name: redis
+  
+  user:
+    image: pardhupersonal/cart:v1
+    container_name: cart
+    depends_on: 
+    - catalogue
+    - redis
+
+  mysql:
+    image: pardhuperonal72/mysql:v1
+    conatiner_name: mysql
+  shipping:
+    image: pardhupersonal72/shipping:v1
+    container_name: shipping
+    depends_on: 
+    - mysql
+    - cart
