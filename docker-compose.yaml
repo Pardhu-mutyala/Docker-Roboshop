@@ -58,7 +58,7 @@ services:
     - cart
     - user
   frontend:
-    image: joindevops/frontend:v1
+    image: pardhupersonal72S/frontend:v1
     container_name: frontend
     ports:
     - "80:80"
