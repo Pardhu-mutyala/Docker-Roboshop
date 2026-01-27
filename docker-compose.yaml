@@ -41,3 +41,30 @@ services:
     environment: 
       RABBITMQ_DEFAULT_USER: roboshop
       RABBITMQ_DEAFULT_PASS: roboshop123
+
+  payment:
+    image: pardhupersonal72/payment:v1
+    container_name: payment
+    environment:
+      CART_HOST: cart
+      CART_PORT1: 8080
+      USER_HOST: user
+      USER_PORT: 8080
+      AMQP_HOST: rabbitmq
+      AQMP_USER: roboshop
+      AMQP_PASS: roboshop123S
+    depends_on: 
+    - rabbitmq
+    - cart
+    - user
+  frontend:
+    image: joindevops/frontend:v1
+    container_name: frontend
+    ports:
+    - "80:80"
+    depends_on:
+    - catalogue
+    - user
+    - cart
+    - shipping
+    - payment
