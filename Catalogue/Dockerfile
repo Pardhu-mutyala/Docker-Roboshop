@@ -1,11 +1,11 @@
-FROM node:20-alpine3.21 as builder
+FROM node:20-alpine3.21 AS builder
 WORKDIR /opt/server
 COPY package.json .
 COPY *.js .
 RUN npm install
 
 FROM node:20-alpine3.21
-RUN add group -S roboshop && adduser -S roboshop -G roboshop
+RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
 ENV MONGO="true" \
      MONGO_URL="mongodb://mongodb:27017/catalogue"
 WORKDIR /opt/server
@@ -23,7 +23,7 @@ CMD ["node", "server.js"]
 
 
 # FROM node:20-alpine3.21
-# RUN add group -S roboshop && adduser -S roboshop -G roboshop
+# RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
 # WORKDIR /opt/server
 # COPY package.json .
 # COPY *.js .
