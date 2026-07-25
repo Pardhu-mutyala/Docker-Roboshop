@@ -1,14 +1,13 @@
-FROM node:20-alpine3.21 as builder
+FROM node:20-alpine3.21 AS builder
 WORKDIR /opt/server
 COPY package.json .
 COPY *.js .
 RUN npm install
 
 FROM node:20-alpine3.21
-RUN add group -S roboshop && adduser -S roboshop -G roboshop
-ENV REDIS_URL="redis://redis:6379" \
-     MONGO_URL="mongodb://mongodb:27017/catalogue"\
-     MONGO = "true"
+RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
+ENV  MONGO_URL="mongodb://mongodb:27017/catalogue" \
+     REDIS_URL="redis://redis:6379" 
 WORKDIR /opt/server
 USER roboshop
 COPY --from=builder /opt/server /opt/server

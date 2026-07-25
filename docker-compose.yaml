@@ -1,6 +1,6 @@
 networks:
   default:
-    driver: bride 
+    driver: bridge 
     name: my-nw
     external: true  # I created a network already using docker network create roboshop
 volumes:
@@ -12,9 +12,9 @@ volumes:
 services:
   mongodb:
     image: pardhu72/mongodb:v1
-    conatiner_name: mongodb
+    container_name: mongodb
     volumes:
-    - mongodb: /data/db
+    - mongodb:/data/db
   catalogue:
     image: pardhu72/catalogue:v1
     container_name: catalogue
@@ -26,15 +26,22 @@ services:
     container_name: redis
   
   user:
+    image: pardhu72/user:v1
+    container_name: user
+    depends_on: 
+    - catalogue
+    - redis
+  
+  cart:
     image: pardhu72/cart:v1
     container_name: cart
-    depends_on: 
+    depends_on:
     - catalogue
     - redis
 
   mysql:
-    image: pardhuperonal72/mysql:v1
-    conatiner_name: mysql
+    image: pardhu72/mysql:v1
+    container_name: mysql
   shipping:
     image: pardhu72/shipping:v1
     container_name: shipping
@@ -65,7 +72,7 @@ services:
     - cart
     - user
   frontend:
-    image: pardhu72S/frontend:v1
+    image: pardhu72/frontend:v1
     container_name: frontend
     ports:
     - "80:80"
